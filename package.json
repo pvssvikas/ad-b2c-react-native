@@ -1,5 +1,5 @@
 {
-  "name": "ad-b2c-react-native",
+  "name": "@pvssvikas/ad-b2c-react-native",
   "version": "1.1.7",
   "description": "React Native Azure B2C auth using JS. This doesn't require eject from expo.",
   "main": "index.js",
