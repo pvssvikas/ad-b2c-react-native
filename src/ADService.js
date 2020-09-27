@@ -24,6 +24,9 @@ class ADService {
     this.IdTokenKey = "idToken";
     this.RefreshTokenKey = "refreshToken";
     this.ExpiresOnKey = "expiresOn";
+    this.IdTokenExpiresOn = "id_token_expires_in";
+    this.RefreshTokenExpiresOn = "refresh_token_expires_in";
+    this.ValidFrom = "not_before";
   };
 
   logoutAsync = async () => {
@@ -91,10 +94,9 @@ class ADService {
     if (!authCode) {
       return Result(
         false,
-        `Empty ${
-          isRefreshTokenGrant
-            ? "refresh token or user not logged in"
-            : "auth code"
+        `Empty ${isRefreshTokenGrant
+          ? "refresh token or user not logged in"
+          : "auth code"
         }`
       );
     }
@@ -145,12 +147,39 @@ class ADService {
       this.secureStore.setItemAsync(this.TokenTypeKey, res.token_type),
       this.secureStore.setItemAsync(this.AccessTokenKey, res.access_token),
       this.secureStore.setItemAsync(this.RefreshTokenKey, res.refresh_token),
-      this.secureStore.setItemAsync(this.IdTokenKey, res.id_token),
-      this.secureStore.setItemAsync(
+    ]);
+
+    if (res.id_token) {
+      await this.secureStore.setItemAsync(this.IdTokenKey, res.id_token)
+    }
+
+    if (res.expires_on) {
+      await this.secureStore.setItemAsync(
         this.ExpiresOnKey,
         res.expires_on.toString()
-      ),
-    ]);
+      )
+    }
+
+    if(res.not_before) {
+      await this.secureStore.setItemAsync(
+        this.ValidFrom,
+        res.not_before.toString()
+      )
+    }
+
+    if(res.id_token_expires_in) {
+      await this.secureStore.setItemAsync(
+        this.IdTokenExpiresOn,
+        res.id_token_expires_in.toString()
+      )
+    }
+
+    if(res.refresh_token_expires_in) {
+      await this.secureStore.setItemAsync(
+        this.RefreshTokenExpiresOn,
+        res.refresh_token_expires_in.toString()
+      )
+    }
   };
 
   _getStaticURI = (policy, endPoint) => {
